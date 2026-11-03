@@ -142,10 +142,14 @@ export function AppShell({ title, children }: { title: string; children: ReactNo
     }
   }, [open]);
 
-  // Auto-close with the roll-up whenever the route changes.
+  // Auto-close with the roll-up only when the route actually changes.
+  const lastPath = useRef(path);
   useEffect(() => {
+    if (lastPath.current === path) return;
+    lastPath.current = path;
     if (open) closeAfterRoll();
-  }, [open, path, closeAfterRoll]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [path]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
