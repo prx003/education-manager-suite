@@ -172,6 +172,16 @@ export function AppShell({ title, children }: { title: string; children: ReactNo
     closeAfterRoll(() => router.navigate({ to: target }));
   };
 
+  // Open the menu if it was tapped before the page finished loading.
+  useEffect(() => {
+    const w = window as unknown as { __menuReady?: boolean; __menuPending?: boolean };
+    w.__menuReady = true;
+    if (w.__menuPending) {
+      w.__menuPending = false;
+      setOpen(true);
+    }
+  }, []);
+
   const toggleMenu = () => {
     if (open || rollingUp) closeAfterRoll();
     else setOpen(true);
