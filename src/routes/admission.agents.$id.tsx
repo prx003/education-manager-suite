@@ -7,6 +7,9 @@ import { ArrowLeft, Mail, Phone, Star, TrendingUp, Trophy, XCircle } from "lucid
 import { Section, StatCard } from "@/components/ui/page";
 import { Button } from "@/components/ui/button";
 import { useSales, agentStats } from "@/lib/sales-store";
+import { useState } from "react";
+import { FollowUpBoard } from "@/components/sales/follow-up/follow-up-board";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admission/agents/$id")({
   component: AgentDetail,
@@ -15,6 +18,7 @@ export const Route = createFileRoute("/admission/agents/$id")({
 function AgentDetail() {
   const { id } = useParams({ from: "/admission/agents/$id" });
   const state = useSales();
+  const [tab, setTab] = useState<"dashboard" | "followup">("dashboard");
   const agent = state.agents.find((a) => a.id === id);
 
   if (!agent) {
@@ -79,6 +83,17 @@ function AgentDetail() {
         </div>
       </div>
 
+      <div className="flex gap-1 border-b">
+        {([["dashboard", "Agent Dashboard"], ["followup", "Follow Up"]] as const).map(([k, l]) => (
+          <button key={k} onClick={() => setTab(k)}
+            className={cn("-mb-px border-b-2 px-4 py-2 text-sm font-semibold transition",
+              tab === k ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground")}>
+            {l}
+          </button>
+        ))}
+      </div>
+
+      {tab === "followup" ? <FollowUpBoard agent={agent} leads={leads} /> : (<>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Leads handled" value={s.leads.toString()} icon={TrendingUp} />
         <StatCard label="Calls made" value={s.calls.toString()} icon={Phone} accent="primary" />
@@ -194,6 +209,7 @@ function AgentDetail() {
           </table>
         </div>
       </Section>
+      </>)}
     </div>
   );
 }
