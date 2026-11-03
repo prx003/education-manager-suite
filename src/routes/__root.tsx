@@ -109,6 +109,12 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <script
+          // Remember menu taps made before the app finishes loading.
+          dangerouslySetInnerHTML={{
+            __html: `document.addEventListener("click",function(e){var t=e.target&&e.target.closest&&e.target.closest(".mat-trigger");if(t&&!window.__menuReady){window.__menuPending=true;}},true);`,
+          }}
+        />
         {children}
         <Scripts />
       </body>
